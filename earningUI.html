@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Earnings Page</title>
+    <link rel="stylesheet" href="earningUI.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-title">Obsidian Bus</div>
+            <div>Tracking</div>
+        </div>
+        
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="buses.html">My Buses</a></li>
+                <li><a href="earningUI.html">Earnings</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-actions">
+            <button class="profile-btn">
+                <span class="profile-icon">👤</span>
+                My Profile
+            </button>
+            <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Earnings By Date</h2>
+                <div class="date-filter">
+                    <select class="date-select" id="dateFilter" onchange="handleDateFilter()">
+                        <option value="7">Last 7 Days</option>
+                        <option value="14">Last 14 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 3 Months</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+            </div>
+
+            <table class="earnings-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bus</th>
+                        <th>Route</th>
+                        <th>Trips Count</th>
+                        <th>Total Fares</th>
+                    </tr>
+                </thead>
+                <tbody id="earningsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="card">
+            <h2 class="card-title" style="margin-bottom: 20px;">Earnings Chart Relative to Table</h2>
+            <div class="chart-container" id="chartContainer">
+            </div>
+        </div>
+    </div>
+
+    <script src="earningUI.js"></script>
+</body>
+</html>
