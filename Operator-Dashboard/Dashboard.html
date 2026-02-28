@@ -1,0 +1,71 @@
+﻿<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Dashboard </title>
+
+    <link rel="stylesheet" href="Dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="operator-navbar">
+        <div class="logo">Obsidian Bus<br>Tracking</div>
+
+        <nav class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">My Buses</a>
+            <a href="#">Earnings</a>
+        </nav>
+
+        <div class="nav-actions">
+            <button class="profile-btn">My Profile <i class="fa-solid fa-circle-user"></i></button>
+            <button class="logout-btn" onclick="window.location.href='operator-login.html'">Log Out</button>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1>Welcome, [Name]</h1>
+
+        <div class="stats-grid">
+
+            <div class="bus-operator-card">
+                <div class="card-top">
+                    <i class="fa-solid fa-bus"></i>
+                    <h3>Total Owned<br>Buses</h3>
+                </div>
+                <p class="stat-number">24</p>
+            </div>
+
+            <div class="bus-operator-card">
+                <div class="card-top">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    <h3>Today's<br>Earnings</h3>
+                </div>
+                <p class="stat-number">LKR 250,000</p>
+            </div>
+
+            <div class="bus-operator-card">
+                <div class="card-top">
+                    <i class="fa-solid fa-bus"></i>
+                    <h3>Active Buses</h3>
+                </div>
+                <p class="stat-number">24</p>
+            </div>
+
+            <div class="bus-operator-card">
+                <div class="card-top">
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-bus-simple"></i>
+                        <i class="fa-solid fa-circle-exclamation alert-badge"></i>
+                    </div>
+                    <h3>Inactive Buses</h3>
+                </div>
+                <p class="stat-number">5</p>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
