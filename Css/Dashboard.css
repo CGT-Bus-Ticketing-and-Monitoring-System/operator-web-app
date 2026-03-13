@@ -11,66 +11,6 @@ body {
     min-height: 100vh;
 }
 
-.operator-navbar {
-    background-color: #3170b1;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.operator-navbar .logo {
-    font-weight: 700;
-    font-size: 1.2rem;
-    line-height: 1.2;
-}
-
-.operator-navbar .nav-links {
-    display: flex;
-    gap: 30px;
-}
-
-.operator-navbar .nav-links a {
-    color: white;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1rem;
-    transition: opacity 0.2s;
-}
-
-.operator-navbar .nav-links a:hover {
-    opacity: 0.8;
-}
-
-.nav-actions {
-    display: flex;
-    gap: 15px;
-}
-
-.nav-actions button {
-    background-color: #dbeafe;
-    color: #000;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nav-actions button:hover {
-    background-color: #bfdbfe;
-}
-
 .dashboard-container {
     padding: 40px 60px;
     max-width: 1400px;

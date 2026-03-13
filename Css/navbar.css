@@ -1,0 +1,74 @@
+.operator-navbar {
+    background-color: #2b6cb0; 
+    padding: 0 40px;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.operator-navbar .logo {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.operator-navbar .nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.operator-navbar .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: font-weight 0.2s ease;
+}
+
+.operator-navbar .nav-links a.active {
+    font-weight: 700;
+    text-decoration: underline; 
+}
+
+.operator-navbar .nav-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.operator-navbar .btn,
+.operator-navbar button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.operator-navbar .profile-btn {
+    background-color: white;
+    color: #000;
+}
+
+.operator-navbar .profile-btn i {
+    font-size: 1.1rem;
+}
+
+.operator-navbar .logout-btn {
+    background-color: #93c5fd; 
+    color: #000;
+}
+
+@media (max-width: 768px) {
+    .operator-navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 20px;
+        gap: 15px;
+    }
+}
