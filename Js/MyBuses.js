@@ -157,13 +157,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }           
         });
     }
-
-   
-    const logoutBtn = document.querySelector('.logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-               window.location.href = 'operator-login.html';
-            
-        });
-    }
 });
