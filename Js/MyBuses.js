@@ -1,84 +1,126 @@
 document.addEventListener('DOMContentLoaded', () => {
     
+    const operatorId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
 
-    const createBusBtn = document.getElementById('createBusBtn');
-    const modalOverlay = document.getElementById('createBusModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const createBusForm = document.getElementById('createBusForm');
-    const busList = document.querySelector('.bus-list'); 
-
-    
-    if (createBusBtn && modalOverlay) {
-        createBusBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'flex';
-        });
+    if (!operatorId) {
+        console.warn("No operator_id found in localStorage");
     }
 
-    if (closeModalBtn && modalOverlay) {
-        closeModalBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'none';
-            createBusForm.reset(); 
-        });
-    }
+    fetchBuses(operatorId);
+});
 
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.style.display = 'none';
-            }
-        });
-    }
-    
-    if (createBusForm) {
-        createBusForm.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-            const model = document.getElementById('busModel').value;
-            const regNo = document.getElementById('regNo').value;
-             
-            if(regNo.trim() === '' || model.trim() === '') {
-                alert("Please fill in the Registration No and Model.");
-                return;
-            }
-       
-            const newBusCardHTML = `
+async function fetchBuses(id) {
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/my-buses/${id}`);
+        const data = await response.json();
+        
+        const busContainer = document.getElementById('busContainer');
+        busContainer.innerHTML = ''; 
+
+        if (data.length === 0) {
+            busContainer.innerHTML = '<p class="no-data">No buses found for your account.</p>';
+            return;
+        }
+
+        data.forEach(bus => {
+            const statusClass = bus.status === 'ACTIVE' ? 'status-active' : 'status-inactive';
+
+            busContainer.innerHTML += `
                 <div class="bus-card">
                     <div class="card-left">
                         <i class="fa-solid fa-bus bus-icon"></i>
                         <div class="bus-details">
-                            <h3>Reg No: ${regNo.toUpperCase()}</h3>
-                            <p>Route: Unassigned</p>
-                            <p>Model: ${model}</p>
-                            <p class="earnings"><strong>Earnings Today:</strong></p>
+                            <h3>${bus.bus_name}</h3>
+                            <p><strong>Reg No:</strong> ${bus.registration_number}</p>
+                            <p><strong>Model:</strong> ${bus.model}</p>
+                            <p><strong>Capacity:</strong> ${bus.capacity} Seats</p>
                         </div>
                     </div>
                     <div class="card-right">
-                        <div class="status-badge status-inactive">Inactive</div>
+                        <div class="status-badge ${statusClass}">${bus.status}</div>
                         <div class="action-icons">
                             <i class="fa-solid fa-file-pen edit-icon" title="Edit"></i>
-                            <i class="fa-solid fa-trash delete-icon" title="Delete"></i>
+                            <i class="fa-solid fa-trash delete-icon" title="Delete" onclick="deleteBus(${bus.bus_id})"></i>
                         </div>
                     </div>
                 </div>
             `;
-           
-            busList.insertAdjacentHTML('afterbegin', newBusCardHTML);
- 
-            createBusForm.reset();
-            modalOverlay.style.display = 'none';
         });
+    } catch (err) {
+        console.error("Error fetching data:", err);
     }
-  
-    if (busList) {
-        busList.addEventListener('click', (e) => {
-            
-           
-            if (e.target.classList.contains('delete-icon')) {
-                const card = e.target.closest('.bus-card');
-                const regNo = card.querySelector('h3').innerText;
-                
-                 card.remove(); 
-                
-            }           
+}
+
+
+async function deleteBus(busId) {
+    if (confirm("Are you sure you want to delete this bus?")) {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/delete-bus/${busId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert("Bus deleted successfully!");
+                location.reload(); 
+            } else {
+                alert("Error: Could not delete the bus.");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+        }
+    }
+}
+
+
+const modal = document.getElementById('createBusModal');
+const createBtn = document.getElementById('createBusBtn');
+const closeBtn = document.getElementById('closeModalBtn');
+const createForm = document.getElementById('createBusForm');
+
+createBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
+createForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const currentId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
+
+    const busData = {
+        bus_name: document.getElementById('busName').value,
+        model: document.getElementById('busModel').value,
+        registration_number: document.getElementById('regNo').value,
+        capacity: document.getElementById('capacity').value,
+        operator_id: currentId,
+        status: 'ACTIVE'
+    };
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/create-bus`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(busData)
         });
+
+        if (response.ok) {
+            alert("Bus added successfully!");
+            modal.style.display = 'none';
+            createForm.reset();
+            location.reload();
+        } else {
+            alert("Error: Could not save the bus.");
+        }
+    } catch (error) {
+        console.error("Submission error:", error);
     }
 });
