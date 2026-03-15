@@ -59,6 +59,39 @@
         </div>
     </div>
 
+    <!-- Edit Bus Modal -->
+    <div id="editBusModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Edit Bus</h2>
+            <form id="editBusForm">
+                <div class="modal-form-group">
+                    <label for="editBusName">Bus Name</label>
+                    <input type="text" id="editBusName" name="editBusName" placeholder="Pre Filled Data">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="editBusModel">Model</label>
+                    <input type="text" id="editBusModel" name="editBusModel" placeholder="Pre Filled Data">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="editRegNo">Registration No</label>
+                    <input type="text" id="editRegNo" name="editRegNo" placeholder="Pre Filled Data">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label for="editCapacity">Capacity</label>
+                    <input type="number" id="editCapacity" name="editCapacity" placeholder="Pre Filled Data">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn modal-btn-blue">Edit Bus</button>
+                    <button type="button" id="closeEditModalBtn" class="btn modal-btn-red">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="./Js/MyBuses.js"></script>
 </body>
 </html>
