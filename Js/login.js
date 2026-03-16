@@ -57,8 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (response.ok) {
+                    localStorage.clear();//dilshan's change
+
+                    // Keep both keys for compatibility across pages.
+                    localStorage.setItem('operatorToken', result.token);//dulina's change
                     localStorage.setItem('adminToken', result.token);
                     localStorage.setItem('adminFName', result.fname);
+
+                    localStorage.setItem('operatorId', result.operator_id);//dilshan's change
                     
                     window.location.href = 'home.html';
                 } else {
