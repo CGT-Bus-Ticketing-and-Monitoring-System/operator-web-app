@@ -2,11 +2,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #2b6cb0; 
+    background: linear-gradient(to left, #2E94D4, #004C82); 
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -19,18 +19,23 @@ body {
     justify-content: center;
     gap: 200px; 
     width: 100%;
-    max-width: 1200px;
-    padding: 20px;
+    max-width: 1400px;
+    padding: 10px;
 }
 
+.titleSpan {
+    font-size: 2rem;
+    font-weight: 100;
+    color: white;
+}
 
 .brand-section h1 {
     color: white;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1.2;
+    font-size: 4rem;
+    font-weight: 400;
+    font-family: "Pattaya", sans-serif;
+    line-height: 1.1;
 }
-
 
 .login-card {
     background-color: white;
@@ -47,7 +52,6 @@ body {
     color: #000;
 }
 
-
 .input-group {
     margin-bottom: 20px;
 }
@@ -63,7 +67,7 @@ body {
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    background-color: #e0e0e0; 
+    background-color: #e0e0e0;
     border: none;
     border-radius: 10px;
     outline: none;
@@ -71,14 +75,13 @@ body {
 }
 
 .input-group input:focus {
-    
     background-color: #d6d6d6; 
 }
 
 button {
     width: 100%;
     padding: 12px;
-    background-color: #4299e1; 
+    background-color: #4299e1;
     color: white;
     border: none;
     border-radius: 10px;
@@ -93,11 +96,33 @@ button:hover {
     background-color: #3182ce;
 }
 
-
 @media (max-width: 768px) {
     .main-container {
         flex-direction: column;
         gap: 40px;
         text-align: center;
     }
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; 
+}
+
+#togglePassword {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    color: #64748b; 
+    transition: color 0.2s;
+}
+
+#togglePassword:hover {
+    color: #3b82f6;
 }
