@@ -1,18 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
 
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-        
-        console.log('Login Attempted:');
-        console.log('Username:', username);
-        console.log('Password:', password);
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
 
-        
-        alert(`Login clicked for user: ${username}`);
-    });
+                const result = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('adminToken', result.token);
+                    localStorage.setItem('adminFName', result.fname);
+                    
+                    window.location.href = 'home.html';
+                } else {
+                    alert(result.message || 'Login failed. Please check your credentials.');
+                }
+
+            } catch (error) {
+                console.error('Network Error:', error);
+                alert('Could not connect to the server.');
+            }
+        });
+    }
+
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        });
+    }
 });

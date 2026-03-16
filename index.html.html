@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obsidian Bus Tracking Login</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="operator-login-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pattaya&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="main-container">
         <div class="brand-section">
-            <h1>Obsidian Bus<br>Tracking</h1>
+            <h1>Bus Buddy</h1>
+            <span class="titleSpan">Your very own bus tracking companion</span>
         </div>
 
         <div class="login-card">
@@ -23,7 +29,10 @@
                 
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="input-field" required>
+                        <i class="fa-solid fa-eye" id="togglePassword"></i>
+                    </div>
                 </div>
 
                 <button type="submit">Login</button>
@@ -31,6 +40,7 @@
         </div>
     </div>
 
+    <script src="config.js"></script> 
     <script src="operator-login-script.js"></script>
 </body>
 </html>
