@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        const profileBtn = document.querySelector('.profile-btn');
+        if (profileBtn) {
+            profileBtn.addEventListener('click', () => {
+                window.location.href = 'home.html';
+            });
+        }
+
         const logoutBtn = document.querySelector('.logout-btn');
         
         if (logoutBtn) {
