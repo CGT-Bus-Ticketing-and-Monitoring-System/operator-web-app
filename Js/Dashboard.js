@@ -1,37 +1,48 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const operatorId = localStorage.getItem('operator_id') || 1; 
-    console.log("Found Operator ID:", operatorId);
+    const operatorId = localStorage.getItem('operatorId');
+    const token = localStorage.getItem('operatorToken');
+    const savedName = localStorage.getItem('operatorFName');
 
-    async function updateDashboard() {
+    if (!operatorId) {
+        console.warn("No operatorId found. Redirecting to login...");
+        window.location.href = 'index.html'; 
+        return;
+    }
+
+    const welcomeEl = document.getElementById('welcome-name') || document.querySelector('h1');
+    if (welcomeEl) {
+        welcomeEl.innerText = `Welcome, ${savedName || 'Operator'}`;
+    }
+
+    async function loadDashboardData() {
         try {
-        
-            const response = await fetch(`http://localhost:3000/api/operator/dashboard-summary`, {
+            const response = await fetch(`http://localhost:3000/api/operator/dashboard-summary/${operatorId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token || ''}`,
                     'Content-Type': 'application/json'
                 }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Backend Data received:", data);
-
-                document.getElementById('welcome-name').innerText = `Welcome, ${data.fname || 'User'}`;
-                document.getElementById('total-buses').innerText = data.total_buses;
-                document.getElementById('active-buses').innerText = data.active_buses;
-                document.getElementById('inactive-buses').innerText = data.inactive_buses;
                 
-                const formattedEarnings = new Intl.NumberFormat().format(data.today_earnings);
+                document.getElementById('total-buses').innerText = data.total_buses || 0;
+                document.getElementById('active-buses').innerText = data.active_buses || 0;
+                document.getElementById('inactive-buses').innerText = data.inactive_buses || 0;
+                
+                const formattedEarnings = new Intl.NumberFormat().format(data.today_earnings || 0);
                 document.getElementById('earnings-display').innerText = `LKR ${formattedEarnings}`;
+                
+                if (welcomeEl && data.fname) {
+                    welcomeEl.innerText = `Welcome, ${data.fname}`;
+                }
             } else {
-                console.error("Backend returned an error:", response.status);
+                console.error('Failed to load dashboard stats');
             }
         } catch (error) {
-            console.error("Could not connect to Backend server:", error);
+            console.error('Network Error:', error);
         }
     }
 
-    updateDashboard();
+    loadDashboardData();
 });
