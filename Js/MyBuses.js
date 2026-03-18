@@ -24,6 +24,10 @@ async function fetchBuses(id) {
 
         data.forEach(bus => {
             const statusClass = bus.status === 'ACTIVE' ? 'status-active' : 'status-inactive';
+            
+            const safeName = bus.bus_name ? String(bus.bus_name).replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+            const safeModel = bus.model ? String(bus.model).replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+            const safeReg = bus.registration_number ? String(bus.registration_number).replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
 
             busContainer.innerHTML += `
                 <div class="bus-card">
@@ -39,7 +43,7 @@ async function fetchBuses(id) {
                     <div class="card-right">
                         <div class="status-badge ${statusClass}">${bus.status}</div>
                         <div class="action-icons">
-                            <i class="fa-solid fa-file-pen edit-icon" title="Edit"></i>
+                            <i class="fa-solid fa-file-pen edit-icon" title="Edit" onclick="openEditModal(${bus.bus_id}, '${safeName}', '${safeModel}', '${safeReg}', ${bus.capacity})"></i>
                             <i class="fa-solid fa-trash delete-icon" title="Delete" onclick="deleteBus(${bus.bus_id})"></i>
                         </div>
                     </div>
@@ -124,3 +128,78 @@ createForm.addEventListener('submit', async (e) => {
         console.error("Submission error:", error);
     }
 });
+let currentEditBusId = null;
+const editModal = document.getElementById('editBusModal');
+const closeEditBtn = document.getElementById('closeEditModalBtn');
+const editForm = document.getElementById('editBusForm');
+
+window.openEditModal = function(busId, name, model, regNo, capacity) {
+    currentEditBusId = busId;
+    
+    document.getElementById('editBusName').value = name || '';
+    document.getElementById('editBusModel').value = model || '';
+    document.getElementById('editRegNo').value = regNo || '';
+    document.getElementById('editCapacity').value = capacity || '';
+    
+    if(editModal) {
+        editModal.style.display = 'flex';
+    }
+};
+
+if (closeEditBtn) {
+    closeEditBtn.addEventListener('click', () => {
+        editModal.style.display = 'none';
+        currentEditBusId = null;
+    });
+}
+
+window.addEventListener('click', (event) => {
+    if (event.target == editModal) {
+        editModal.style.display = 'none';
+        currentEditBusId = null;
+    }
+});
+
+if (editForm) {
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentEditBusId) return;
+
+        const token = localStorage.getItem('operatorToken');
+        if (!token) {
+            alert('Authentication error. Please login again.');
+            return;
+        }
+
+        const updatedData = {
+            bus_name: document.getElementById('editBusName').value,
+            model: document.getElementById('editBusModel').value,
+            registration_number: document.getElementById('editRegNo').value,
+            capacity: parseInt(document.getElementById('editCapacity').value, 10)
+        };
+
+        try {
+            const response = await fetch(CONFIG.API_BASE_URL + '/update-bus/' + currentEditBusId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.ok) {
+                alert('Bus updated successfully!');
+                editModal.style.display = 'none';
+                location.reload();
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.message || 'Could not update the bus.'));
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            alert('Network error updating bus');
+        }
+    });
+}
