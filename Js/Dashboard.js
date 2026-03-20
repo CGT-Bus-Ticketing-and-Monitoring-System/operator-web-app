@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadDashboardData() {
         try {
-            const response = await fetch(`http://localhost:3000/api/operator/dashboard-summary/${operatorId}`, {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/dashboard-summary/${operatorId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
