@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
     const operatorId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
 
     if (!operatorId) {
@@ -43,8 +42,13 @@ async function fetchBuses(id) {
                     <div class="card-right">
                         <div class="status-badge ${statusClass}">${bus.status}</div>
                         <div class="action-icons">
-                            <i class="fa-solid fa-file-pen edit-icon" title="Edit" onclick="openEditModal(${bus.bus_id}, '${safeName}', '${safeModel}', '${safeReg}', ${bus.capacity})"></i>
-                            <i class="fa-solid fa-trash delete-icon" title="Delete" onclick="deleteBus(${bus.bus_id})"></i>
+                        <div class="action-icons">
+    <i class="fa-solid fa-pen-to-square icon-edit" style="cursor: pointer; color: #004C82; margin-right: 15px; font-size: 1.1rem;" title="Edit" onclick="openEditModal(${bus.bus_id}, '${safeName}', '${safeModel}', '${safeReg}', ${bus.capacity})"></i>
+    <i class="fa-solid fa-trash delete-icon" style="cursor: pointer; color: #004C82; margin-right: 15px; font-size: 1.1rem;" title="Delete" onclick="deleteBus(${bus.bus_id})"></i>
+    
+    <i class="fa-solid fa-ban icon-delete" style="cursor: pointer; color: #e74c3c; margin-right: 15px; font-size: 1.1rem;" title="Deactivate Bus" onclick="updateStatus(${bus.bus_id}, 'INACTIVE')"></i>
+    <i class="fa-solid fa-check icon-edit" style="cursor: pointer; color: #2ecc71; font-size: 1.1rem;" title="Activate Bus" onclick="updateStatus(${bus.bus_id}, 'ACTIVE')"></i>
+</div>
                         </div>
                     </div>
                 </div>
@@ -55,39 +59,92 @@ async function fetchBuses(id) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchCardInput');
 
-async function deleteBus(busId) {
-    if (confirm("Are you sure you want to delete this bus?")) {
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            const cards = document.querySelectorAll('.bus-card');
+
+            cards.forEach(card => {
+                const busName = card.querySelector('h3').textContent.toLowerCase();
+                
+                if (busName.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+window.deleteBus = async function(busId) {
+    const confirmation = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you really want to delete this bus?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#004C82',
+        confirmButtonText: 'Yes, delete it!',
+        iconColor: '#004C82'
+    });
+
+    if (confirmation.isConfirmed) {
         try {
             const response = await fetch(`${CONFIG.API_BASE_URL}/delete-bus/${busId}`, {
                 method: 'DELETE'
             });
 
             if (response.ok) {
-                alert("Bus deleted successfully!");
-                location.reload(); 
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Bus deleted successfully!',
+                    icon: 'success',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                }).then(() => {
+                    location.reload(); 
+                });
             } else {
-                alert("Error: Could not delete the bus.");
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Could not delete the bus.',
+                    icon: 'error',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                });
             }
         } catch (error) {
             console.error("Delete error:", error);
+            Swal.fire({
+                title: 'Connection Error',
+                text: 'Could not connect to the server.',
+                icon: 'error',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
         }
     }
 }
-
 
 const modal = document.getElementById('createBusModal');
 const createBtn = document.getElementById('createBusBtn');
 const closeBtn = document.getElementById('closeModalBtn');
 const createForm = document.getElementById('createBusForm');
 
-createBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-});
+if (createBtn) {
+    createBtn.addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
+}
 
-closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
+if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
 
 window.addEventListener('click', (event) => {
     if (event.target == modal) {
@@ -95,39 +152,86 @@ window.addEventListener('click', (event) => {
     }
 });
 
-createForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (createForm) {
+    createForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const currentId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
+        const currentId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
+        const busName = document.getElementById('busName').value.trim();
+        const busModel = document.getElementById('busModel').value.trim();
+        const regNo = document.getElementById('regNo').value.trim();
+        const capacity = document.getElementById('capacity').value.trim();
 
-    const busData = {
-        bus_name: document.getElementById('busName').value,
-        model: document.getElementById('busModel').value,
-        registration_number: document.getElementById('regNo').value,
-        capacity: document.getElementById('capacity').value,
-        operator_id: currentId,
-        status: 'ACTIVE'
-    };
-
-    try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/create-bus`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(busData)
-        });
-
-        if (response.ok) {
-            alert("Bus added successfully!");
-            modal.style.display = 'none';
-            createForm.reset();
-            location.reload();
-        } else {
-            alert("Error: Could not save the bus.");
+        if (!busName || !busModel || !regNo || !capacity) {
+            return Swal.fire({
+                title: 'Validation Error',
+                text: 'Please fill in all required fields.',
+                icon: 'warning',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
         }
-    } catch (error) {
-        console.error("Submission error:", error);
-    }
-});
+
+        if (isNaN(capacity) || parseInt(capacity) <= 0) {
+            return Swal.fire({
+                title: 'Invalid Input',
+                text: 'Please enter a valid capacity.',
+                icon: 'warning',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
+        }
+
+        const busData = {
+            bus_name: busName,
+            model: busModel,
+            registration_number: regNo,
+            capacity: parseInt(capacity, 10),
+            operator_id: currentId,
+            status: 'ACTIVE'
+        };
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/create-bus`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(busData)
+            });
+
+            if (response.ok) {
+                modal.style.display = 'none'; 
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Bus added successfully!',
+                    icon: 'success',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                }).then(() => {
+                    createForm.reset();
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Could not save the bus.',
+                    icon: 'error',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                });
+            }
+        } catch (error) {
+            console.error("Submission error:", error);
+            Swal.fire({
+                title: 'Connection Error',
+                text: 'Could not connect to the server.',
+                icon: 'error',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
+        }
+    });
+}
+
 let currentEditBusId = null;
 const editModal = document.getElementById('editBusModal');
 const closeEditBtn = document.getElementById('closeEditModalBtn');
@@ -168,15 +272,46 @@ if (editForm) {
 
         const token = localStorage.getItem('operatorToken');
         if (!token) {
-            alert('Authentication error. Please login again.');
+            Swal.fire({
+                title: 'Unauthorized',
+                text: 'Authentication error. Please login again.',
+                icon: 'warning',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
             return;
         }
 
+        const busName = document.getElementById('editBusName').value.trim();
+        const busModel = document.getElementById('editBusModel').value.trim();
+        const regNo = document.getElementById('editRegNo').value.trim();
+        const capacity = document.getElementById('editCapacity').value.trim();
+
+        if (!busName || !busModel || !regNo || !capacity) {
+            return Swal.fire({
+                title: 'Validation Error',
+                text: 'Please fill in all required fields.',
+                icon: 'warning',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
+        }
+
+        if (isNaN(capacity) || parseInt(capacity) <= 0) {
+            return Swal.fire({
+                title: 'Invalid Input',
+                text: 'Please enter a valid capacity.',
+                icon: 'warning',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
+        }
+
         const updatedData = {
-            bus_name: document.getElementById('editBusName').value,
-            model: document.getElementById('editBusModel').value,
-            registration_number: document.getElementById('editRegNo').value,
-            capacity: parseInt(document.getElementById('editCapacity').value, 10)
+            bus_name: busName,
+            model: busModel,
+            registration_number: regNo,
+            capacity: parseInt(capacity, 10)
         };
 
         try {
@@ -190,16 +325,106 @@ if (editForm) {
             });
 
             if (response.ok) {
-                alert('Bus updated successfully!');
-                editModal.style.display = 'none';
-                location.reload();
+                editModal.style.display = 'none'; 
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Bus updated successfully!',
+                    icon: 'success',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                }).then(() => {
+                    location.reload();
+                });
             } else {
                 const data = await response.json();
-                alert('Error: ' + (data.message || 'Could not update the bus.'));
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Could not update the bus.',
+                    icon: 'error',
+                    iconColor: '#004C82',
+                    confirmButtonColor: '#004C82'
+                });
             }
         } catch (error) {
             console.error('Update error:', error);
-            alert('Network error updating bus');
+            Swal.fire({
+                title: 'Connection Error',
+                text: 'Network error updating bus.',
+                icon: 'error',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
         }
     });
 }
+
+window.updateStatus = async function(busId, newStatus) {
+    const confirmation = await Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to change this bus status to ${newStatus}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#004C82',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!',
+        iconColor: '#004C82'
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    const token = localStorage.getItem('operatorToken'); 
+    
+    if (!token) {
+        Swal.fire({
+            title: 'Unauthorized',
+            text: 'Authentication error. Please login again.',
+            icon: 'warning',
+            iconColor: '#004C82',
+            confirmButtonColor: '#004C82'
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/update-bus-status/${busId}`, { 
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                title: 'Updated!',
+                text: `Bus status changed to ${newStatus}`,
+                icon: 'success',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            }).then(() => {
+                 const operatorId = localStorage.getItem('operatorId') || localStorage.getItem('operator_id');
+                 fetchBuses(operatorId); 
+            });
+        } else {
+            const data = await response.json();
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to update status',
+                icon: 'error',
+                iconColor: '#004C82',
+                confirmButtonColor: '#004C82'
+            });
+        }
+    } catch (error) {
+        console.error('Status Update Error:', error);
+        Swal.fire({
+            title: 'Connection Error',
+            text: 'Network error updating bus status. Check terminal for server crashes!',
+            icon: 'error',
+            iconColor: '#004C82',
+            confirmButtonColor: '#004C82'
+        });
+    }
+};
+
