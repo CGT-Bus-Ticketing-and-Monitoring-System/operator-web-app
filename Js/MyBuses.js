@@ -34,6 +34,7 @@ async function fetchBuses(id) {
                         <i class="fa-solid fa-bus bus-icon"></i>
                         <div class="bus-details">
                             <h3>${bus.bus_name}</h3>
+                            <p><strong>Route code:</strong> <strong style="color: #1992ad">${bus.route || 'Unassigned'}</strong></p>
                             <p><strong>Reg No:</strong> ${bus.registration_number}</p>
                             <p><strong>Model:</strong> ${bus.model}</p>
                             <p><strong>Capacity:</strong> ${bus.capacity} Seats</p>
